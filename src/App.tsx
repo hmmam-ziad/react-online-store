@@ -4,7 +4,6 @@ import Modal from "./Compnents/ui/Modal"
 import { formInputsList, productList } from "./Data"
 import Button from "./Compnents/ui/Button";
 import Input from "./Compnents/ui/Input";
-import { Description } from "@headlessui/react";
 import { IProduct } from "./interfaces";
 
 
@@ -47,7 +46,7 @@ function App() {
   const renderFormInputList = formInputsList.map(input => (
     <div className="flex flex-col">
       <label htmlFor={input.id} className="mb-[1px] text-sm font-medium text-gray-700">{input.label}</label>
-      <Input type="text" id={input.id} name={input.name} value={''} onChange={onChangeHandler}/>
+      <Input type="text" id={input.id} name={input.name} value={product[input.name]} onChange={onChangeHandler}/>
     </div>
   ));
 
