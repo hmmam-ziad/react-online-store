@@ -9,9 +9,11 @@ interface Iprops {
     product: IProduct;
     setProductToEdit: (product: IProduct) => void;
     openEditModal: () => void;
+    idx: number;
+    setProductToEditIdx: (value: number) => void;
 }
 
-const ProductCard = ({product, setProductToEdit, openEditModal}: Iprops) => {
+const ProductCard = ({product, setProductToEdit, openEditModal,idx , setProductToEditIdx}: Iprops) => {
     const {title, description, imageURL, price, colors} = product;
 
     const renderColor = colors.map(color => <CircleColor key={color} color={color} />)
@@ -19,6 +21,10 @@ const ProductCard = ({product, setProductToEdit, openEditModal}: Iprops) => {
     const onEdit = () => {
         setProductToEdit(product);
         openEditModal();
+        setProductToEditIdx(idx);
+    }
+
+    const onRemove = () =>{
     }
 
     return(
@@ -44,7 +50,7 @@ const ProductCard = ({product, setProductToEdit, openEditModal}: Iprops) => {
 
             <div className="flex items-center justify-between space-x-2 mt-5">
                 <Button className="bg-indigo-700" width="w-full" onClick={onEdit}>Edit</Button>
-                <Button className="bg-red-700" width="w-full">Delete</Button>
+                <Button className="bg-red-700" width="w-full" onClick={onRemove}>Delete</Button>
             </div>
         </div>
     );

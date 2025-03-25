@@ -30,6 +30,7 @@ function App() {
     const [products, setProducts] = useState<IProduct[]>(productList);  
     const [product, setProduct] = useState<IProduct>(defaultProduct);  
     const [productToEdit, setProductToEdit] = useState<IProduct>(defaultProduct);
+    const [productToEditIdx, setProductToEditIdx] = useState<number>(0);
     const [errors, setErrors] = useState({title: '', description: '', imageURL: '', price: ''});
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenEditModal, setisOpenEditModal] = useState(false);
@@ -80,7 +81,9 @@ function App() {
       });
   };
 
-  const renderProduct = products.map(product => <ProductCard key={product.id} product={product} setProductToEdit={setProductToEdit} openEditModal={openEdit}/>)
+  const renderProduct = products.map((product, idx) => (
+      <ProductCard key={product.id} product={product} setProductToEdit={setProductToEdit} openEditModal={openEdit} idx={idx} setProductToEditIdx={setProductToEditIdx}/>
+  ))
   
   const renderFormInputList = formInputsList.map(input => (
     <div className="flex flex-col" key={input.id}>
@@ -118,7 +121,6 @@ function App() {
 
 
   const submitEditHandler = (event: FormEvent<HTMLFormElement>): void => {
-    // console.log(product);
     event.preventDefault();
     const {title , description, price, imageURL} = productToEdit;
 
@@ -131,12 +133,13 @@ function App() {
       return;
     }
 
-    // console.log({...product, id: uuid(), colors: tempColors});
     
-    
+    const updatedProducts = [...products]
+    updatedProducts[productToEditIdx] = {...productToEdit, colors: tempColors.concat(productToEdit.colors)};
+    setProducts(updatedProducts);
     setProductToEdit(defaultProduct);
     setTempColors([]);
-    close();
+    closeEdit();
     
   }
 
@@ -153,6 +156,11 @@ function App() {
 
   const renderColor = colors.map(color => <CircleColor key={color} color={color} onClick={() => {
       if(tempColors.includes(color)) {
+        setTempColors(prev => prev.filter(item => item !== color));
+        return;
+      }
+
+      if(productToEdit.colors.includes(color)) {
         setTempColors(prev => prev.filter(item => item !== color));
         return;
       }
@@ -196,15 +204,15 @@ function App() {
               {renderProductEditWithErrorMsg('description', 'Product Description', 'description')}
               {renderProductEditWithErrorMsg('imageURL', 'Product Image URL', 'imageURL')}
               {renderProductEditWithErrorMsg('price', 'Product Price', 'price')}
-              {/* {renderFormInputList}
-              <SelectMenu selected={selectedCategory} setSelected={setSelectedCategory}/>
-              <div className="flex items-center flex-wrap my-4 space-x-1">
-                {renderColor}
-              </div>
-              
-              <div className="flex items-center flex-wrap my-4 space-x-1">
-                {tempColors.map(color => (<span key={color} className="p-1 mr-1 text-xs rounded-md text-white" style={{backgroundColor: color}}>{color}</span>))}
-              </div> */}
+              {/* {renderFormInputList}*/}
+              <SelectMenu selected={productToEdit.category} setSelected={value => setProductToEdit({...productToEdit, category: value})}/>
+                <div className="flex items-center flex-wrap my-4 space-x-1">
+                  {renderColor}
+                </div>
+                
+                <div className="flex items-center flex-wrap my-4 space-x-1">
+                  {tempColors.concat(productToEdit.colors).map(color => (<span key={color} className="p-1 mr-1 text-xs rounded-md text-white" style={{backgroundColor: color}}>{color}</span>))}
+                </div> 
               <div className="flex items-center space-x-3">
                 <Button className="bg-indigo-700 hover:bg-indigo-800" width="w-full">Submit</Button>
                 <Button className="bg-gray-400 hover:bg-gray-500" width="w-full" onClick={closeEdit}>Cancle</Button>
